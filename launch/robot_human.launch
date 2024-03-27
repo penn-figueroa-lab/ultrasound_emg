@@ -1,0 +1,64 @@
+<launch>
+    <arg name="optitrack"   default="true"/>
+    <arg name="gui"         default="true"/>
+    <arg name="world_name"  default="world"/> 
+    <arg name="human_rviz"  default="false"/>
+    <arg name="robot_rviz"  default="true"/>
+    <arg name="human_model" value="human"/>
+    <arg name="robot_model" value="iiwa"/>
+
+    <!-- HUMAN -->
+    <group ns="human">
+        <param name="tf_prefix" value="human" />
+        <include file="$(find intent_capability_hri)/launch/human.launch">
+            <arg name="human_rviz" value="false"/>
+            <arg name="robot_name" value="$(arg human_model)" />
+            <arg name="optitrack_skl" value="false"/>
+        </include> 
+    </group>
+
+    <!-- ROBOT -->
+    <group ns="robot">
+        <param name="tf_prefix" value="robot" />
+        <arg name="robot_name" default="$(arg robot_model)" />
+        <!-- <include file="$(find iiwa_interactive_controller)/launch/cartesian_impedance_gazebo.launch">
+            <arg name="gui" value="false"/>
+            <arg name="robot_rviz" value="false"/>
+        </include> -->
+    </group>
+
+    <!-- <include file="$(find iiwa_interactive_controller)/launch/cartesian_impedance_gazebo.launch">
+        <arg name="gui" value="false"/>
+        <arg name="robot_rviz" value="false"/>
+    </include> -->
+
+    <include file="$(find iiwa_interactive_controller)/launch/cartesian_impedance_real.launch">
+        <arg name="gui" value="false"/>
+        <arg name="robot_rviz" value="false"/>
+    </include>
+
+
+    <arg name="rvizconfig" default="$(find intent_capability_hri)/cfg/robot_human_config.rviz" />
+    <node name="robot_human_rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  />
+
+    <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 0 1 world human/Hip_mocap" ns="human" />
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="robot_base_broadcaster" args="0 0 0 0 0 0 1 world iiwa_link_0" ns="robot" /> -->
+
+    <node name="ellipsoid_publisher" pkg="intent_capability_hri" type="human_ellipsoid.py" output="screen" ns="human" />
+    
+    <!-- <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg human_model) -x 0 -y 0 -z 0 -param human_description" />  -->
+
+    <!-- <node pkg="tf" type="static_transform_publisher" name="force_sensor_tf_pub" args="0 0 0.0375 0 0 0.707 0.707 iiwa_link_ee robotiq_force_torque_frame_id 100" /> -->
+
+    
+    <!-- <node name="joystick" pkg="intent_capability_hri" type="joystick.py" output="screen"/>  -->
+    <!-- <node name="move" pkg="intent_capability_hri" type="move.py" output="screen" respawn='true' respawn_delay='1'/> -->
+
+    <!-- <include file="$(find iiwa_interactive_controller)/launch/passiveDS_gazebo.launch"></include> -->
+    <!-- <include file="$(find iiwa_interactive_controller)/launch/joint_impedance_gazebo.launch"></include> -->
+
+    <!-- <include file="$(find iiwa_interactive_controller)/launch/admittance_real.launch"></include> -->
+    <!-- <node name="iiwa_interactive_position_interface" pkg="iiwa_interactive_controller" type="iiwa_interactive_controller_position_interface" output="screen" cwd="node" /> -->
+    
+</launch>
+
