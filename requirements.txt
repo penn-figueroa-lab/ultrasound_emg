@@ -1,3 +1,16 @@
-
+lxml==5.1.0
+matplotlib==3.2.2
+mujoco==3.1.2
+numpy==1.24.4
+py3rosmsgs==1.18.2
+pybullet==3.2.6
+# PyKDL==1.4.0
+pytorch_seed==0.2.0
+PyYAML==6.0.1
+roslib==1.15.8
+rospy==1.16.0
+sensor_msgs==1.13.1
+tf==1.13.2
+torch==2.2.1
 
 -e git+https://github.com/UM-ARM-Lab/pytorch_kinematics.git#egg=pytorch_kinematics
