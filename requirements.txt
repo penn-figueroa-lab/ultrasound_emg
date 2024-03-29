@@ -1,6 +1,6 @@
 numpy==1.24.4
-numpy==1.24.2
-numpy==1.17.4
+# numpy==1.24.2
+# numpy==1.17.4
 py3rosmsgs==1.18.2
 PyKDL==1.4.0
 pytorch_kinematics==0.6.1
@@ -8,3 +8,5 @@ rospy==1.16.0
 sensor_msgs==1.13.1
 tf==1.13.2
 urdfdom_py==0.4.6
+
+-e git+https://github.com/UM-ARM-Lab/pytorch_kinematics.git#egg=pytorch_kinematics
