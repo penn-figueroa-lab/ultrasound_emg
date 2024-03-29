@@ -2,7 +2,7 @@
 
 # Human joint state publisher from mocap data
 import numpy as np
-import roslib
+# import roslib
 import rospy
 import sensor_msgs.msg
 from geometry_msgs.msg import Pose, PoseArray, PoseStamped

@@ -6,10 +6,10 @@
 #
 #
 
-import roslib
+# import roslib
 import rospy
 import sensor_msgs.msg
-import geometry_msgs.msg
+# import geometry_msgs.msg
 from math import pi
 
 if __name__ == '__main__':

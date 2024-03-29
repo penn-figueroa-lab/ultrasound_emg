@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 
-import sys
 import os
 import numpy as np
 import rospy
-from math import cos, sin, pi
-import matplotlib.pyplot as plt
-import geometry_msgs
+# from math import cos, sin, pi
+# import matplotlib.pyplot as plt
+# import geometry_msgs
 from std_msgs.msg import Header, Float32, Float64MultiArray, MultiArrayDimension
 import sensor_msgs.msg
 import visualization_msgs.msg
 from visualization_msgs.msg import Marker
-import tf
-from tf.transformations import quaternion_from_matrix
+# import tf
+# from tf.transformations import quaternion_from_matrix
 from std_srvs.srv import Empty, EmptyResponse
-import torch
+# import torch
 import pytorch_kinematics as pk
-import xacro
+# import xacro
 from urdf_parser_py.urdf import URDF
 import PyKDL
 

@@ -6,10 +6,10 @@
 #
 #
 
-import roslib
+# import roslib
 import rospy
 import sensor_msgs.msg
-import geometry_msgs.msg
+# import geometry_msgs.msg
 import numpy as np
 
 
