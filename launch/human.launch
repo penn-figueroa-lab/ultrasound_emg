@@ -1,0 +1,41 @@
+<launch>
+
+  <arg name="robot_name" default="human"/>
+  <arg name="human_rviz" default="true"/>
+  <arg name="optitrack_skl" default="false"/>
+  <arg name="human_description" default="human_description" />
+  <!-- <arg name="robot_description" value="$(arg robot_name)" /> -->
+
+  <!-- <arg name="world_name" default="$(find iiwa_gazebo)/world/iiwa.world"/>  -->
+
+  <!-- Load the urdf into the parameter server. -->      
+  <param name="human_description" 
+      command="$(find xacro)/xacro '$(find intent_capability_hri)/urdf/human.urdf.xacro' "/>
+  <!-- <remap from="robot_description" to="$(arg human_description)" /> -->
+  <!-- robot_name:=$(arg robot_name)"/> -->
+  <!-- <param name="tf_prefix" value="tf_human" />   -->
+  <!-- <param name="robot_description" command="xacro '$(find intent_capability_hri)/urdf/human.urdf.xacro'"/> -->
+
+  <!-- <arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" /> -->
+  <arg name="rvizconfig" default="$(find intent_capability_hri)/cfg/human_config.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" if="$(arg human_rviz)" />
+  <!-- <display name="RobotModel" type="rviz/RobotModel">
+      <property name="Robot Description" value="$(arg robot_description)" />
+    </display> -->
+
+  <node name="skl_joint_publisher" pkg="intent_capability_hri" type="skl_joint_states.py" output="screen" if="$(arg optitrack_skl)" />
+  <node name="human_joint_publisher" pkg="intent_capability_hri" type="human_joint_states.py" output="screen" unless="$(arg optitrack_skl)"/>
+  <node name="ellipsoid_publisher" pkg="intent_capability_hri" type="human_ellipsoid.py" output="screen" if="$(arg human_rviz)" />
+  <node name="human_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <remap from="robot_description" to="$(arg human_description)" />
+      <remap from="joint_states" to="/human/joint_states" />
+      <!-- <remap from="tf" to="/human/tf" /> -->
+   </node>
+  
+  <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name) -x 0 -y 0 -z 0 -param human_description" /> 
+  <!-- <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name)" /> -->
+
+  
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 1 world human_base_link" /> -->
+  
+</launch>
