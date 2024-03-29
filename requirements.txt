@@ -1,19 +1,17 @@
-numpy==1.24.4
-# numpy==1.24.2
-# numpy==1.17.4
+matplotlib==3.1.2
 py3rosmsgs==1.18.2
-PyKDL==1.4.0
-pytorch_kinematics==0.6.1
-rospy==1.16.0
+pytorch_kinematics
+rospy
 sensor_msgs==1.13.1
 tf==1.13.2
 urdfdom_py==0.4.6
-# absl-py
-# lxml
-# mujoco
-# pyyaml
-torch
-matplotlib
-# pytorch_seed
+docutils==0.16
+eigen==0.0.1
+# Eigen3
+setuptools==69.2.0
+Boost
+KDL
+
+pykdl
 
 -e git+https://github.com/UM-ARM-Lab/pytorch_kinematics.git#egg=pytorch_kinematics
