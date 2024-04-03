@@ -5,34 +5,15 @@ import numpy as np
 # import roslib
 import rospy
 import sensor_msgs.msg
+from std_msgs.msg import Header, Float32, Float64MultiArray, MultiArrayDimension
 from geometry_msgs.msg import Pose, PoseArray, PoseStamped
 from math import pi
-from tf.transformations import euler_from_quaternion, quaternion_from_euler, quaternion_matrix
+from tf.transformations import euler_from_quaternion, quaternion_from_euler, quaternion_matrix, euler_from_matrix
 from visualization_msgs.msg import Marker
 #MARKER ARRAY
 from visualization_msgs.msg import MarkerArray
 fixed_frame_name = "/world"
 MOCAP = True
-
-def make_text(text, attractor, id):
-    marker = Marker()
-    marker.header.frame_id = "world"
-    marker.header.stamp = rospy.Time.now()
-    marker.type = marker.TEXT_VIEW_FACING
-    marker.action = marker.ADD
-    marker.pose.position.x = attractor[0]
-    marker.pose.position.y = attractor[1]
-    marker.pose.position.z = attractor[2] # yaw
-    marker.scale.z = 0.05
-    marker.text = text
-    marker.color.a = 1.0  # Alpha
-    # white text  
-    marker.color.r = 1.0  # Red
-    marker.color.g = 1.0  # Green
-    marker.color.b = 1.0  # Blue
-    marker.id = id
-    return marker
-
 
 class SKL:
 
@@ -48,15 +29,47 @@ class SKL:
         self.bone_pose = np.zeros((skl_bones_num,7))
         self.bone_pos = np.zeros((skl_bones_num,3))
         self.bone_rot = np.zeros((skl_bones_num,3))
-        self.joints = [] #np.zeros((1,))
+        self.joints = [] 
         self.joints_list = []
+        
+        self.ultrasound_pose = np.zeros((1,7))
+        self.right_uarm_pose = np.zeros((1,7))
+        self.left_uarm_pose = np.zeros((1,7))
+        self.elbow_angle = np.zeros((1,3))
 
+
+        self.natnet_ultrasound_sub = rospy.Subscriber('/natnet_ros/ultrasound/pose', Pose, self.ultrasound_callback, tcp_nodelay=True)
         self.natnet_skl_sub = rospy.Subscriber('/natnet_ros/fullbody/pose', PoseArray, self.skl_callback, tcp_nodelay=True)
+
         self.skl_joint_state_pub = rospy.Publisher('/human/joint_states', sensor_msgs.msg.JointState, queue_size=10)
+        self.elbow_pub = rospy.Publisher('/ultrasound/elbow_angle', Float64MultiArray, queue_size=10)
+        self.ultrasound_pub = rospy.Publisher('/ultrasound/placement', Pose, queue_size=10)
         self.text_pub = rospy.Publisher('/human/vis/text', MarkerArray, queue_size=10)
 
         # self.start = False
 
+    def ultrasound_callback(self,msg):
+        '''
+        ultrasound sensor position
+        ultrasound sensor orientation
+        '''
+        self.ultrasound_pose[0] = msg.position.x
+        self.ultrasound_pose[1] = msg.position.y
+        self.ultrasound_pose[2] = msg.position.z
+        self.ultrasound_pose[3] = msg.orientation.x
+        self.ultrasound_pose[4] = msg.orientation.y
+        self.ultrasound_pose[5] = msg.orientation.z
+        self.ultrasound_pose[6] = msg.orientation.w
+        # (ang1, ang2, ang3) = euler_from_quaternion(self.ultrasound_pose[3:], axes='rxyz')
+        '''
+        Idea: Other than position, we can track the orientational placement of the ultrasound
+              sensor on the upperarm. This can also give us some idea about the best placement.
+        There is one issue right now: 
+            the skl data is not in the world frame (pos and rot are wrt proximal bone)
+            the ultrasound data is in the world frame
+            One solution is FK, but it is not accurate
+            Next step: Extracting the joint angles using global exports from mocap
+        '''
     def skl_callback(self,msg):
         '''
         0 hip
@@ -85,8 +98,6 @@ class SKL:
             self.bone_pose[idx,4] = bone.orientation.y
             self.bone_pose[idx,5] = bone.orientation.z
             self.bone_pose[idx,6] = bone.orientation.w
-            marker_idx = make_text (str(idx), [bone.position.x, bone.position.y, bone.position.z], idx)
-            MarkerArr.markers.append(marker_idx)
 
             (ang1, ang2, ang3) = euler_from_quaternion(self.bone_pose[idx,3:], axes='rxyz') # ???
             # rospy.loginfo_throttle(5, str(self.bone_pose[idx,0]) + " " + str(self.bone_pose[idx,1]) + " " + str(self.bone_pose[idx,2]) + " " + str(self.bone_pose[idx,3]) + " " + str(self.bone_pose[idx,4]) + " " + str(self.bone_pose[idx,5]) + " " + str(self.bone_pose[idx,6]) )
@@ -98,7 +109,10 @@ class SKL:
             self.bone_rot[idx,1] = ang1
             self.bone_rot[idx,2] = ang3
             # rospy.loginfo ("idx: %s      bone_rot:  %s", idx, [round(180/pi*element, 2) for element in self.bone_rot[idx,:]] )
-        self.text_pub.publish(MarkerArr)
+
+            # marker_idx = make_text (str(idx), [bone.position.x, bone.position.y, bone.position.z], idx)
+            # MarkerArr.markers.append(marker_idx)
+        # self.text_pub.publish(MarkerArr)
         
         # self.bone_pos[0,:] -= self.kuka_pos[0,:]
         # self.joints.append (self.bone_pos[0,:])     # hip_position
@@ -129,7 +143,7 @@ class SKL:
         self.joints.append (self.bone_rot[8,:])         # hand
         # print("\n \n Right sh: ", [round(element, 2) for element in self.bone_rot[25,:]] )
         # print("\n \n Right el: ", [round(element, 2) for element in self.bone_rot[26,:]] )
-        # print("\n \n Right wr: ", [round(element, 2) for element in self.bone_rot[26,:]] )
+        # print("\n \n Right wr: ", [round(element, 2) for element in self.bone_rot[27,:]] )
         # print("\n \n Left sh: ", [round(element, 2) for element in self.bone_rot[6,:]] )
         # print("\n \n Left el: ", [round(element, 2) for element in self.bone_rot[7,:]] )
 
@@ -183,15 +197,41 @@ class SKL:
         # self.skl_joint_state_pub.publish(joint_states)
         self.skl_joint_state_pub.publish(joint_states)
 
+    def ultrasound_elbow(self):
+        '''
+        Publish the elbow angles and the ultrasound sensor position wrt upperarm
+        '''
+        R_ultrasound = quaternion_matrix(self.ultrasound_pose[3:])
+        p_ultrasound_right = self.ultrasound_pose[:3]-self.bone_pose[25,:3]
+        p_ultrasound_left = self.ultrasound_pose[:3]-self.bone_pose[6,:3]
+
+        # Sensor on right arm
+        if np.linalg.norm(p_ultrasound_right) > np.linalg.norm(p_ultrasound_left):
+            elbow_angle = self.bone_rot[26,:]
+            R_upperarm = quaternion_matrix(self.bone_pose[25,3:])            
+            R_ultrasound_rel = R_upperarm.T @ R_ultrasound
+            ultrasound_pos = p_ultrasound_right
+        # Sensor on left arm
+        else:
+            elbow_angle = self.bone_rot[7,:]
+            R_upperarm = quaternion_matrix(self.bone_pose[6,3:])
+            R_ultrasound_rel = R_upperarm.T @ R_ultrasound
+            ultrasound_pos = p_ultrasound_left
+
+        ultrasound_rot = euler_from_matrix(R_ultrasound_rel, axes='rxyz')
+        ultrasount_placement = np.concatenate((ultrasound_pos, ultrasound_rot))
+        self.ultrasound_pub.publish(ultrasount_placement)    
+        self.elbow_pub.publish(self.bone_rot[26,:])
+
 
 def main():
-    rospy.init_node('skl_joint_publisher')
+    rospy.init_node('ultrasound_elbow_publisher')
     freq=10
     r = rospy.Rate(freq)
     skl = SKL(1/freq)
 
     while not rospy.is_shutdown():
-        skl.skl_joint_states()
+        skl.ultrasound_elbow()
         r.sleep()
     rospy.spin()
          
