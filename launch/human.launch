@@ -3,6 +3,7 @@
   <arg name="robot_name" default="human"/>
   <arg name="human_rviz" default="true"/>
   <arg name="optitrack_skl" default="false"/>
+  <arg name="skl_exports_global" default="false"/>
   <arg name="human_description" default="human_description" />
 
   <!-- Load the urdf into the parameter server. -->      
@@ -17,7 +18,8 @@
   <arg name="rvizconfig" default="$(find human_model)/config/human_config.rviz" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" if="$(arg human_rviz)" />
 
-  <node name="skl_joint_publisher" pkg="human_model" type="skl_joint_states.py" output="screen" if="$(arg optitrack_skl)" />
+  <node name="skl_joint_publisher_global" pkg="human_model" type="skl_joint_states_global.py" output="screen" if="{{$(arg optitrack_skl) and $(arg skl_exports_global)}}" />
+  <node name="skl_joint_publisher_local" pkg="human_model" type="skl_joint_states.py" output="screen" if="{{$(arg optitrack_skl) and not $(arg skl_exports_global)}}"/>
   <node name="human_joint_publisher" pkg="human_model" type="human_joint_states.py" output="screen" unless="$(arg optitrack_skl)"/>
   <node name="human_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
       <remap from="robot_description" to="$(arg human_description)" />

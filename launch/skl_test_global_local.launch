@@ -1,0 +1,37 @@
+<launch>
+    <arg name="optitrack"   default="true"/>
+    <arg name="world_name"  default="world"/> 
+    <arg name="human_rviz"  default="false"/>
+    <arg name="human_model" default="human"/>
+
+    <!-- HUMAN -->
+    <group ns="human_g">
+        <param name="tf_prefix" value="human_g" />
+        <include file="$(find human_model)/launch/human.launch">
+            <arg name="human_rviz" value="false"/>
+            <arg name="robot_name" value="$human_g" />
+            <arg name="optitrack_skl" value="true"/>
+            <arg name="skl_exports_global" value="true"/>
+        </include> 
+    </group>
+
+    <group ns="human_l">
+        <param name="tf_prefix" value="human_l" />
+        <include file="$(find human_model)/launch/human.launch">
+            <arg name="human_rviz" value="false"/>
+            <arg name="robot_name" value="$human_l" />
+            <arg name="optitrack_skl" value="true"/>
+            <arg name="skl_exports_global" value="false"/>
+        </include>
+
+
+    <arg name="rvizconfig" default="$(find human_model)/config/test_skl_config.rviz" />
+    <node name="human_rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" />
+
+    <node pkg="tf2_ros_human_g" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 0 1 fullbody human_g/Hip_mocap" ns="human_g" />
+    <node pkg="tf2_ros_human_l" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 0 1 fullbody human_g/Hip_mocap" ns="human_l" />
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 -0.707 0.707 fullbody /human/Hip_mocap" ns="human" /> -->
+
+        
+</launch>
+
