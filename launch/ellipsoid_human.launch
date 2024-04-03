@@ -1,0 +1,30 @@
+<launch>
+    <arg name="optitrack"   default="true"/>
+    <arg name="gui"         default="true"/>
+    <arg name="world_name"  default="world"/> 
+    <arg name="human_rviz"  default="false"/>
+    <arg name="robot_rviz"  default="true"/>
+    <arg name="human_model" value="human"/>
+    <arg name="robot_model" value="iiwa"/>
+
+    <!-- HUMAN -->
+    <group ns="human">
+        <param name="tf_prefix" value="human" />
+        <include file="$(find human_model)/launch/human.launch">
+            <arg name="human_rviz" value="false"/>
+            <arg name="robot_name" value="$(arg human_model)" />
+            <arg name="optitrack_skl" value="false"/>
+        </include> 
+    </group>
+
+
+    <arg name="rvizconfig" default="$(find human_model)/config/human_config.rviz" />
+    <node name="human_rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" ns="human" />
+
+    <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 0 1 world human/Hip_mocap" ns="human" />
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 -0.707 0.707 fullbody /human/Hip_mocap" ns="human" /> -->
+
+    <node name="ellipsoid_publisher" pkg="human_model" type="human_ellipsoid.py" output="screen" ns="human" />
+        
+</launch>
+

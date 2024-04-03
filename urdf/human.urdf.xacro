@@ -33,11 +33,11 @@
     <!--LINKS-->
 	<!--Link base (1)-->
 	<link name="Hip_mocap">
-        <inertial>
-            <mass value="5.696"/>
+        <!-- <inertial>
+            <mass value="0"/>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <inertia ixx="0" iyy="0" izz="0" ixy="0" ixz="0" iyz="0"/>
-        </inertial>
+        </inertial> -->
     </link>
 		
 	<link name="hip">

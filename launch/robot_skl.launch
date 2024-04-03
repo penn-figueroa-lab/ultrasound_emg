@@ -10,7 +10,7 @@
     <!-- HUMAN -->
     <group ns="human">
         <param name="tf_prefix" value="human" />
-        <include file="$(find intent_capability_hri)/launch/human.launch">
+        <include file="$(find human_model)/launch/human.launch">
             <arg name="human_rviz" value="false"/>
             <arg name="robot_name" value="$(arg human_model)" />
             <arg name="optitrack_skl" value="true"/>
@@ -24,13 +24,13 @@
     </group>
 
     <!-- <include file="$(find iiwa_interactive_controller)/launch/cartesian_impedance_gazebo.launch"> -->
-    <include file="$(find iiwa_interactive_controller)/launch/cartesian_impedance_real.launch">
+    <!-- <include file="$(find iiwa_interactive_controller)/launch/cartesian_impedance_real.launch">
         <arg name="gui" value="false"/>
         <arg name="robot_rviz" value="false"/>
-    </include>
+    </include> -->
 
-    <node name="ellipsoid_publisher" pkg="intent_capability_hri" type="human_ellipsoid.py" output="screen" ns="human" />
-    <arg name="rvizconfig" default="$(find intent_capability_hri)/cfg/robot_human_config.rviz" />
+    <node name="ellipsoid_publisher" pkg="human_model" type="human_ellipsoid.py" output="screen" ns="human" />
+    <arg name="rvizconfig" default="$(find human_model)/config/robot_human_config.rviz" />
     <node name="robot_human_rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  />
 
     <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="robot_mocap_broadcaster" args="0 0 0 0 0 0 1 iiwa_link_0 fullbody" ns="human" /> -->
@@ -45,8 +45,8 @@
     <!-- <node pkg="tf" type="static_transform_publisher" name="force_sensor_tf_pub" args="0 0 0.0375 0 0 0.707 0.707 iiwa_link_ee robotiq_force_torque_frame_id 100" /> -->
 
     
-    <!-- <node name="joystick" pkg="intent_capability_hri" type="joystick.py" output="screen"/>  -->
-    <!-- <node name="move" pkg="intent_capability_hri" type="move.py" output="screen" respawn='true' respawn_delay='1'/> -->
+    <!-- <node name="joystick" pkg="human_model" type="joystick.py" output="screen"/>  -->
+    <!-- <node name="move" pkg="human_model" type="move.py" output="screen" respawn='true' respawn_delay='1'/> -->
 
     <!-- <include file="$(find iiwa_interactive_controller)/launch/passiveDS_gazebo.launch"></include> -->
     <!-- <include file="$(find iiwa_interactive_controller)/launch/joint_impedance_gazebo.launch"></include> -->

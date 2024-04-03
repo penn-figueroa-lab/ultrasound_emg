@@ -10,6 +10,7 @@ from std_msgs.msg import Header, Float32, Float64MultiArray, MultiArrayDimension
 import sensor_msgs.msg
 import visualization_msgs.msg
 from visualization_msgs.msg import Marker
+from scipy.spatial.transform import Rotation
 # import tf
 # from tf.transformations import quaternion_from_matrix
 from std_srvs.srv import Empty, EmptyResponse
@@ -17,7 +18,7 @@ from std_srvs.srv import Empty, EmptyResponse
 import pytorch_kinematics as pk
 # import xacro
 from urdf_parser_py.urdf import URDF
-import PyKDL
+# import PyKDL
 
 # BEFORE RUNNING THIS:
 # go to urdf directory
@@ -62,7 +63,6 @@ class Ellipsoid:
         self.left_joint_states = np.zeros(len(chain_left_joints))
         self.human_ellipsoid_matrix = np.zeros((6,6))
 
-
         if USE_MOCAP:
             self.human_joint_state_sub = rospy.Subscriber('/human/joint_states', sensor_msgs.msg.JointState, self.joint_states_callback, tcp_nodelay=True)
         else:
@@ -74,7 +74,6 @@ class Ellipsoid:
         self.left_force_ellipsoid_pub =  rospy.Publisher('/human/vis/force_ellipsoid_l', visualization_msgs.msg.Marker, queue_size=10)
         self.human_right_ellipsoid_matrix_pub = rospy.Publisher('/human/right_ellip_matrix', Float64MultiArray, queue_size=10)
         self.human_left_ellipsoid_matrix_pub = rospy.Publisher('/human/left_ellip_matrix', Float64MultiArray, queue_size=10)
-
 
     def fixed_joint_states_callback(self,data):
         if len(data.position) == len(data.name):
@@ -117,6 +116,7 @@ class Ellipsoid:
 
     def show_manipulability_ellipsoid(self,chain):
         
+        matrix_msg = Float64MultiArray()
         marker = visualization_msgs.msg.Marker()
         marker.header.frame_id = "human/hip" 
         marker.header.stamp = rospy.Time.now()
@@ -154,11 +154,17 @@ class Ellipsoid:
         (eigValues,eigVectors) = np.linalg.eig (M)
         axes_len = np.sqrt(eigValues)
 
-        eigx_n =-PyKDL.Vector(eigVectors[0,0],eigVectors[1,0],eigVectors[2,0])
-        eigy_n =-PyKDL.Vector(eigVectors[0,1],eigVectors[1,1],eigVectors[2,1])
-        eigz_n =-PyKDL.Vector(eigVectors[0,2],eigVectors[1,2],eigVectors[2,2])        
-        R = PyKDL.Rotation (eigx_n,eigy_n,eigz_n)
-        quat = R.GetQuaternion ()
+        # eigx_n =-PyKDL.Vector(eigVectors[0,0],eigVectors[1,0],eigVectors[2,0])
+        # eigy_n =-PyKDL.Vector(eigVectors[0,1],eigVectors[1,1],eigVectors[2,1])
+        # eigz_n =-PyKDL.Vector(eigVectors[0,2],eigVectors[1,2],eigVectors[2,2])        
+        # R = PyKDL.Rotation (eigx_n,eigy_n,eigz_n)
+        # quat = R.GetQuaternion ()
+        eigx_n = -eigVectors[:, 0]
+        eigy_n = -eigVectors[:, 1]
+        eigz_n = -eigVectors[:, 2]
+        R_matrix = np.column_stack((eigx_n, eigy_n, eigz_n))
+        rotation = Rotation.from_matrix(R_matrix)
+        quat = rotation.as_quat()
         
         marker.pose.orientation.x = quat[0]
         marker.pose.orientation.y = quat[1]
@@ -176,14 +182,14 @@ class Ellipsoid:
         marker.color.b = 1.0
 
         # Publish human_ellipsoid_matrix(6,6):  top-left(3,3) for left hand and bottom-right(3,3) for right hand
-        if chain==chain_left:
+        if chain==chain_right:
             self.right_ellipsoid_pub.publish(marker)
-            M_pub = np.vstack((np.hstack((M, ee_pos)), np.array([0.0, 0.0, 0.0, 1.0])))
-            self.human_right_ellipsoid_matrix_pub.publish(M_pub)
-        elif chain==chain_right:
+            matrix_msg.data = np.vstack((np.hstack((M, ee_pos.reshape(-1,1))), np.array([0.0, 0.0, 0.0, 1.0]))).flatten().tolist()
+            self.human_right_ellipsoid_matrix_pub.publish(matrix_msg)
+        elif chain==chain_left:
             self.left_ellipsoid_pub.publish(marker)
-            M_pub = np.vstack((np.hstack((M, ee_pos)), np.array([0.0, 0.0, 0.0, 1.0])))
-            self.human_left_ellipsoid_matrix_pub.publish(M_pub)
+            matrix_msg.data = np.vstack((np.hstack((M, ee_pos.reshape(-1,1))), np.array([0.0, 0.0, 0.0, 1.0]))).flatten().tolist()
+            self.human_left_ellipsoid_matrix_pub.publish(matrix_msg)
         else:
             print("chain not specified")
         
@@ -206,11 +212,17 @@ class Ellipsoid:
         (eigValues,eigVectors) = np.linalg.eig (np.linalg.inv(M))
         axes_len = np.sqrt(eigValues)
 
-        eigx_n =-PyKDL.Vector(eigVectors[0,0],eigVectors[1,0],eigVectors[2,0])
-        eigy_n =-PyKDL.Vector(eigVectors[0,1],eigVectors[1,1],eigVectors[2,1])
-        eigz_n =-PyKDL.Vector(eigVectors[0,2],eigVectors[1,2],eigVectors[2,2])        
-        R = PyKDL.Rotation (eigx_n,eigy_n,eigz_n)
-        quat = R.GetQuaternion ()
+        # eigx_n =-PyKDL.Vector(eigVectors[0,0],eigVectors[1,0],eigVectors[2,0])
+        # eigy_n =-PyKDL.Vector(eigVectors[0,1],eigVectors[1,1],eigVectors[2,1])
+        # eigz_n =-PyKDL.Vector(eigVectors[0,2],eigVectors[1,2],eigVectors[2,2])        
+        # R = PyKDL.Rotation (eigx_n,eigy_n,eigz_n)
+        # quat = R.GetQuaternion ()
+        eigx_n = -eigVectors[:, 0]
+        eigy_n = -eigVectors[:, 1]
+        eigz_n = -eigVectors[:, 2]
+        R_matrix = np.column_stack((eigx_n, eigy_n, eigz_n))
+        rotation = Rotation.from_matrix(R_matrix)
+        quat = rotation.as_quat()
         
         marker.pose.orientation.x = quat[0]
         marker.pose.orientation.y = quat[1]
@@ -233,8 +245,6 @@ class Ellipsoid:
             self.left_force_ellipsoid_pub.publish(marker)
         else:
             print("chain not specified")        
-
-        
 
 def main():
     rospy.init_node("ellipsoid_publisher")

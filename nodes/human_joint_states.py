@@ -19,8 +19,8 @@ if __name__ == '__main__':
     pub = rospy.Publisher('/human/joint_states', sensor_msgs.msg.JointState, queue_size=10)
     joint_states=sensor_msgs.msg.JointState()
     joint_states.header.frame_id='/world'
-    joint_states.name=[ #'Hip_x', 'Hip_y', 'Hip_z', 'Hip_rotz',  'Hip_rotx', 'Hip_roty', 
-    'static_offset_mocap','Ab_rotx', 'Ab_roty', 'Ab_rotz', 'Chest_rotx', 'Chest_roty','Chest_rotz', 
+    joint_states.name=[ #'static_offset_mocap',#'Hip_x', 'Hip_y', 'Hip_z', 'Hip_rotz', 'Hip_rotx', 'Hip_roty', 
+    'Ab_rotx', 'Ab_roty', 'Ab_rotz', 'Chest_rotx', 'Chest_roty','Chest_rotz', 
     'Neck_rotx', 'Neck_roty', 'Neck_rotz',  'Head_rotx', 'Head_roty', 'Head_rotz',
     'jRightC7Shoulder_rotx', 'jRightC7Shoulder_roty', 'jRightC7Shoulder_rotz', 'jRightShoulder_rotx', 'jRightShoulder_roty', 'jRightShoulder_rotz', 
     'jRightElbow_rotx', 'jRightElbow_roty', 'jRightElbow_rotz', 'jRightWrist_rotx', 'jRightWrist_roty', 'jRightWrist_rotz',
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     #                        0, 0, 0, 0, 0, 0, 0, 0,      #Right Arm
     #                        0, 0, pi/3, -pi/2, -pi/2, -pi/4, 0, 0]      #Left Arm
 
-    joint_states.position=[ 0, 0, 0, 0, 0, 0, 0,            #Ab, Chest
+    joint_states.position=[ 0, 0, 0, 0, 0, 0,            #Ab, Chest
                             0, 0, 0, 0, 0, 0,            #Neck, Head
                             0, 0, 0, 0, 0, 0,            #Right shoulder/upperarm
                             0, 0, 0, 0, 0, 0,            #Right forearm/hand
