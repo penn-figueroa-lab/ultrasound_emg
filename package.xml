@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>human_model</name>
+  <name>ultrasound_emg</name>
   <version>0.1.0</version>
-  <description>The human_model package</description>
+  <description>The ultrasound_emg package</description>
 
   <maintainer email="shkey@seas.upenn.edu">Shafagh Keyvanian</maintainer>
   <license>BSD</license>
