@@ -1,5 +1,5 @@
 <launch>
-  <arg name="human_pkg" default="human_model"/>
+  <arg name="human_pkg" default="ultrasound_emg"/>
   <arg name="robot_name" default="human"/>
   <arg name="human_rviz" default="true"/>
   <arg name="optitrack_skl" default="false"/>
@@ -8,19 +8,22 @@
 
   <!-- Load the urdf into the parameter server. -->      
   <param name="human_description" 
-      command="$(find xacro)/xacro '$(find human_model)/urdf/human.urdf.xacro' "/>
+      command="$(find xacro)/xacro '$(find ultrasound_emg)/urdf/human.urdf.xacro' "/>
   <!-- <remap from="robot_description" to="$(arg human_description)" /> -->
   <!-- robot_name:=$(arg robot_name)"/> -->
   <!-- <param name="tf_prefix" value="tf_human" />   -->
-  <!-- <param name="robot_description" command="xacro '$(find human_model)/urdf/human.urdf.xacro'"/> -->
+  <!-- <param name="robot_description" command="xacro '$(find ultrasound_emg)/urdf/human.urdf.xacro'"/> -->
   
   <!-- <arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" /> -->
-  <arg name="rvizconfig" default="$(find human_model)/config/human_config.rviz" />
+  <arg name="rvizconfig" default="$(find ultrasound_emg)/config/human_config.rviz" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" if="$(arg human_rviz)" />
 
-  <node name="skl_joint_publisher_global" pkg="human_model" type="skl_joint_states_global.py" output="screen" if="{{$(arg optitrack_skl) and $(arg skl_exports_global)}}" />
-  <node name="skl_joint_publisher_local" pkg="human_model" type="skl_joint_states.py" output="screen" if="{{$(arg optitrack_skl) and not $(arg skl_exports_global)}}"/>
-  <node name="human_joint_publisher" pkg="human_model" type="human_joint_states.py" output="screen" unless="$(arg optitrack_skl)"/>
+  <node name="human_joint_publisher" pkg="ultrasound_emg" type="human_joint_states.py" output="screen" unless="$(arg optitrack_skl)"/>
+  <group if="$(arg optitrack_skl)">
+    <node name="skl_joint_publisher_global" pkg="ultrasound_emg" type="skl_joint_states_global.py" output="screen" if="$(arg skl_exports_global)" />
+    <node name="skl_joint_publisher_local" pkg="ultrasound_emg" type="skl_joint_states.py" output="screen" unless="$(arg skl_exports_global)"/> 
+  </group>
+ 
   <node name="human_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
       <remap from="robot_description" to="$(arg human_description)" />
       <remap from="joint_states" to="/human/joint_states" />
@@ -30,6 +33,6 @@
   <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name) -x 0 -y 0 -z 0 -param human_description" /> 
   <!-- <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name)" /> -->
 
-  <node name="ellipsoid_publisher" pkg="human_model" type="human_ellipsoid.py" output="screen" ns="human" />
+  <node name="ellipsoid_publisher" pkg="ultrasound_emg" type="human_ellipsoid.py" output="screen" ns="human" />
   
 </launch>

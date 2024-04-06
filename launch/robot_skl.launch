@@ -4,15 +4,15 @@
     <arg name="world_name"  default="world"/> 
     <arg name="human_rviz"  default="false"/>
     <arg name="robot_rviz"  default="true"/>
-    <arg name="human_model" value="human"/>
+    <arg name="human_name" value="human"/>
     <arg name="robot_model" value="iiwa"/>
 
     <!-- HUMAN -->
     <group ns="human">
         <param name="tf_prefix" value="human" />
-        <include file="$(find human_model)/launch/human.launch">
+        <include file="$(find ultrasound_emg)/launch/human.launch">
             <arg name="human_rviz" value="false"/>
-            <arg name="robot_name" value="$(arg human_model)" />
+            <arg name="robot_name" value="$(arg human_name)" />
             <arg name="optitrack_skl" value="true"/>
         </include> 
     </group>
@@ -29,8 +29,8 @@
         <arg name="robot_rviz" value="false"/>
     </include> -->
 
-    <node name="ellipsoid_publisher" pkg="human_model" type="human_ellipsoid.py" output="screen" ns="human" />
-    <arg name="rvizconfig" default="$(find human_model)/config/robot_human_config.rviz" />
+    <node name="ellipsoid_publisher" pkg="ultrasound_emg" type="human_ellipsoid.py" output="screen" ns="human" />
+    <arg name="rvizconfig" default="$(find ultrasound_emg)/config/robot_human_config.rviz" />
     <node name="robot_human_rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  />
 
     <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="robot_mocap_broadcaster" args="0 0 0 0 0 0 1 iiwa_link_0 fullbody" ns="human" /> -->
@@ -40,13 +40,13 @@
 
     
     
-    <!-- <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg human_model) -x 0 -y 0 -z 0 -param human_description" />  -->
+    <!-- <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg human_name) -x 0 -y 0 -z 0 -param human_description" />  -->
 
     <!-- <node pkg="tf" type="static_transform_publisher" name="force_sensor_tf_pub" args="0 0 0.0375 0 0 0.707 0.707 iiwa_link_ee robotiq_force_torque_frame_id 100" /> -->
 
     
-    <!-- <node name="joystick" pkg="human_model" type="joystick.py" output="screen"/>  -->
-    <!-- <node name="move" pkg="human_model" type="move.py" output="screen" respawn='true' respawn_delay='1'/> -->
+    <!-- <node name="joystick" pkg="ultrasound_emg" type="joystick.py" output="screen"/>  -->
+    <!-- <node name="move" pkg="ultrasound_emg" type="move.py" output="screen" respawn='true' respawn_delay='1'/> -->
 
     <!-- <include file="$(find iiwa_interactive_controller)/launch/passiveDS_gazebo.launch"></include> -->
     <!-- <include file="$(find iiwa_interactive_controller)/launch/joint_impedance_gazebo.launch"></include> -->

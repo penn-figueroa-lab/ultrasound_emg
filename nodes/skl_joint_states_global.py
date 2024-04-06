@@ -174,7 +174,7 @@ class SKL:
         #         rospy.loginfo_throttle(5, str(body_part_string[idx]) + " " + str(self.bone_rot[idx_number,:]) )
         #         # self.joints.append (self.bone_rot[idx_number,:])     # hip_orientation
         
-        self.joints = [0]
+        self.joints = []
         self.joints.append (self.bone_rot[1,:])     # Ab  
         self.joints.append (self.bone_rot[2,:])     # Chest 
         self.joints.append (self.bone_rot[3,:])     # Neck 
@@ -193,7 +193,7 @@ class SKL:
         # print("\n \n Left el: ", [round(element, 2) for element in self.bone_rot[7,:]] )
         self.joints.append (self.bone_rot[8,:])         # hand
 
-        self.joints_list=[0]
+        self.joints_list=[]
         for element in self.joints:
             if isinstance(element, np.ndarray):
                 self.joints_list.extend(element.tolist())
@@ -209,7 +209,7 @@ class SKL:
         joint_states.header.stamp = rospy.Time.now()
         joint_states.header.seq=joint_states.header.seq+1
         joint_states.header.frame_id=fixed_frame_name
-        joint_states.name=['static_offset_mocap',
+        joint_states.name=[#'static_offset_mocap',
         'Ab_rotx', 'Ab_roty', 'Ab_rotz', 'Chest_rotx', 'Chest_roty','Chest_rotz', 
         'Neck_rotx', 'Neck_roty', 'Neck_rotz',  'Head_rotx', 'Head_roty', 'Head_rotz',
         'jRightC7Shoulder_rotx', 'jRightC7Shoulder_roty', 'jRightC7Shoulder_rotz', 'jRightShoulder_rotx', 'jRightShoulder_roty', 'jRightShoulder_rotz', 
@@ -227,12 +227,12 @@ class SKL:
             #                         0, 0, 0, 0, 0, 0,            #Right forearm/hand
             #                         0, 0, pi/3, -pi/2, -pi/2, -pi/4, 0, 0]      #Left Arm
             
-            joint_states.position=[ 0, 0, 0, 0, 0, 0, 0,            #Ab, Chest
-                                0, 0, 0, 0, 0, 0,            #Neck, Head
-                                0, 0, 0, 0, 0, 0,            #Right shoulder/upperarm
-                                0, 0, 0, 0, 0, 0,            #Right forearm/hand
-                                0, 0, 0, 0, pi/3, -pi/2,            # Left shoulder/upperarm
-                                pi/2, -pi/4, 0, 0, 0, 0]            # Left forearm/hand
+            joint_states.position=[ 0, 0, 0, 0, 0, 0,            #Ab, Chest
+                                    0, 0, 0, 0, 0, 0,            #Neck, Head
+                                    0, 0, 0, 0, 0, 0,            #Right shoulder/upperarm
+                                    0, 0, 0, 0, 0, 0,            #Right forearm/hand
+                                    0, 0, 0, 0, pi/3, -pi/2,            # Left shoulder/upperarm
+                                    pi/2, -pi/4, 0, 0, 0, 0]            # Left forearm/hand
 
         # print(len(position))
         # print(joint_states.position)
