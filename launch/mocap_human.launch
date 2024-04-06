@@ -1,0 +1,22 @@
+<launch>
+    <arg name="world_name"  default="world"/> 
+    <arg name="human_name" value="human"/>
+
+    <!-- HUMAN -->
+    <group ns="human">
+        <param name="tf_prefix" value="human" />
+        <include file="$(find ultrasound_emg)/launch/human.launch">
+            <arg name="human_rviz" value="false"/>
+            <arg name="robot_name" value="$(arg human_name)" />
+            <arg name="optitrack_skl" value="true"/>
+        </include> 
+    </group>
+
+
+    <arg name="rvizconfig" default="$(find ultrasound_emg)/config/human_mocap_config.rviz" />
+    <node name="mocap_human_rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  />
+
+    <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 0 1 fullbody human/Hip_mocap" ns="human" />
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 -0.707 0.707 fullbody /human/Hip_mocap" ns="human" />     -->
+    
+</launch>
