@@ -33,6 +33,6 @@
   <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name) -x 0 -y 0 -z 0 -param human_description" /> 
   <!-- <node name="spawn_urdf_human" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name)" /> -->
 
-  <node name="ellipsoid_publisher" pkg="ultrasound_emg" type="human_ellipsoid.py" output="screen" ns="human" />
+  <!-- <node name="ellipsoid_publisher" pkg="ultrasound_emg" type="human_ellipsoid.py" output="screen" ns="human" /> -->
   
 </launch>

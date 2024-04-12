@@ -19,5 +19,5 @@
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 0 1 fullbody human/Hip_mocap" ns="human" />
     <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="human_base_broadcaster" args="0 0 0 0 0 -0.707 0.707 fullbody /human/Hip_mocap" ns="human" />     -->
-    <node name="ellipsoid_publisher" pkg="ultrasound_emg" type="human_ellipsoid.py" output="screen" ns="human" />
+    <node name="ellipsoid_publisher" pkg="ultrasound_emg" type="ultrasound_elbow_mocap.py" output="screen" ns="human" />
 </launch>

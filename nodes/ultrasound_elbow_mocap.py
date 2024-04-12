@@ -153,8 +153,7 @@ class SKL:
                 self.joints_list.extend(element.tolist())
             else:
                 self.joints_list.append(element)
-        # print("\n \n joints: ", [round(element, 2) for element in self.joints_list] )
-        # print(len(self.joints_list))
+
 
 
     def skl_joint_states(self):
@@ -181,12 +180,12 @@ class SKL:
             #                         0, 0, 0, 0, 0, 0,            #Right forearm/hand
             #                         0, 0, pi/3, -pi/2, -pi/2, -pi/4, 0, 0]      #Left Arm
             
-            joint_states.position=[ 0, 0, 0, 0, 0, 0, 0,            #Ab, Chest
-                                0, 0, 0, 0, 0, 0,            #Neck, Head
-                                0, 0, 0, 0, 0, 0,            #Right shoulder/upperarm
-                                0, 0, 0, 0, 0, 0,            #Right forearm/hand
-                                0, 0, 0, 0, pi/3, -pi/2,            # Left shoulder/upperarm
-                                pi/2, -pi/4, 0, 0, 0, 0]            # Left forearm/hand
+            joint_states.position=[ 0, 0, 0, 0, 0, 0,            #Ab, Chest
+                                    0, 0, 0, 0, 0, 0,            #Neck, Head
+                                    0, 0, 0, 0, 0, 0,            #Right shoulder/upperarm
+                                    0, 0, 0, 0, 0, 0,            #Right forearm/hand
+                                    0, 0, 0, 0, pi/3, -pi/2,            # Left shoulder/upperarm
+                                    pi/2, -pi/4, 0, 0, 0, 0]            # Left forearm/hand
 
         # print(len(position))
         # print(joint_states.position)
